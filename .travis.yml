@@ -1,0 +1,15 @@
+services:
+- docker
+env:
+  global:
+  - secure: esFAPg6oI/Zm6zir8OHySfHQQPSttMZmR5FTU7s5goIsGgv/VaoRj5Mk2cDrbZZetnsRMTfSrDZAUh6QZlaXlzFQR07lqqh49tssDXABjQfUbWVFjxpN0kWpbR092ZbLJpAqHccfijQhGdrYQpLierno7haOoLr0pw7m1cgqOWtGV0FcBGhj+N9HTQKbt6OLBHtmKn3G14Hf+WvEullpg/B5bcmJNuyGp/ZICSVm48y5w0ctvUJzu8qloqM9FyzNmd2w/H3zpMxahOjEGisPrkdFcrOlC/3rQwhxebn3M62hpdEmCZTRocqjS1WKNGiip6gP/1HKaI9dPQzPA6Gpyc/UiroHmlVzXGdYJMc1LABkRXeoXyWAQwhPXwWG/EI0ykSPQyymjfzCnPAKwWltw5mIlMwVGRJ5Ei7VS6xw30PrflQmg1IqMfh1voi38YZya5yxIO6BBT6M0Ort7WbVi47xn4XOt+Ci0XEOCfAIZKbaGhNMDbJnSsws2RsoLkCtTc+oTb8iihRguVrKya9+pWQ+ZUkYlYuNhHfsgJboJFRDXTV/mMxZ17+HD4712heHMbeqWnwpivpioO1g5ewHqGbQJiXBI+FjpH/m6qBS/GkKWGKDZK6x9P+Dspc9mmRrpCV+RctlHl1CY7PxYzpS6AuhmXjkRb9fO6nGXxdU/DE=
+  - secure: Qgli0Lvk4UnRq0zgxJy1vdrNBVmT5yhAOR8inW7/pfvNPhStxWktmjv8cLoKj/2EU3Z6/IQ9bATQxZyspG8XXPhyvvBIhAlLsy3IKOFRy0H/a6XHirPiOESGxii5COELIN8rLc1A0ChhStxVyEYS5pX0hvwfjKW+dDPcWfT/WFoqVwSPBdcArt4yGfrYFuMXXx7+awtBQa79bgQMozmdp43xZdYeY9Pnefx0+8J3qrzbRq6SRRp4hjw9Z9SX+WApIFA9jOvIVu5g8WeSqZ9bKbKJZj3OG4wl3f1CU5NfPW0a8kCUkmnpOMe3unKrzIIOWmL1zlqvVZHqOkMlOqbgZYQwLz9W7/cFPnQbd3wCdtGYE8zEP0GAb/BeUOY5MTwGNRW4bBI/8yfnbk/1NinuNKUc9zNmRB494m2ApHH3DHAsKOMfT6v/B9gy1vz9rs2UhN/2dznM7xBt/YR/azSiGfE4bxIhIomolJ/wfMfq/cTb+JFlMg9+B/RzTmJJqw0ZqnW0ER7FiuIz5V1igRA6VkNY2+CBXeJqKB7OVWXYX5cnEAAtwkcLVpdJiJN4Y2a3cYQfvjtCUgTWACzgSDyabfpL/Ozqt/mA1s08Ur9QGMj7QKr69ToF4bDD5j9Ga5Zhcq8sZdEYlpcq4luhQP40tXoHq/sisZCYm7uwHLbiyZ4=
+jobs:
+  include:
+  - stage: deploy
+    name: deploy
+    script: docker run
+      --rm -v $(pwd):$(pwd) -w $(pwd)
+      -e AZURE_CLI_ID=$AZURE_CLI_ID
+      -e AZURE_CLI_KEY=$AZURE_CLI_KEY
+      microsoft/azure-cli bash build.sh
