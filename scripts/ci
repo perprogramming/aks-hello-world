@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+export APP_IMAGE="perprogramming/aks-hello-world:${TRAVIS_BUILD_NUMBER}"
+
+scripts/run maven:3 mvn -Duser.home=$HOME package
+
+docker build -t $APP_IMAGE .
+echo "$DOCKER_HUB_PASSWORD" | docker login -u perprogramming --password-stdin
+docker push $APP_IMAGE
+
+scripts/run -e APP_IMAGE=$APP_IMAGE -e AZURE_CLI_ID=$AZURE_CLI_ID -e AZURE_CLI_KEY=$AZURE_CLI_KEY microsoft/azure-cli scripts/deploy

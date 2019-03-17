@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Fail on any error
+set -e
+
+# Define variables
+export AZURE_SERVICE_PRINCIPAL_ID=$AZURE_CLI_ID
+export AZURE_SERVICE_PRINCIPAL_SECRET=$AZURE_CLI_KEY
+export AZURE_TENANT="infoperprogramming.onmicrosoft.com"
+export APP_NAME="aks-hello-world"
+
+# Login to Azure using a service principal
+az login \
+    --service-principal \
+    -u $AZURE_SERVICE_PRINCIPAL_ID \
+    -p $AZURE_SERVICE_PRINCIPAL_SECRET \
+    --tenant $AZURE_TENANT
+
+# Create a new resource group for the app
+az group create \
+    --name $APP_NAME \
+    --location westeurope
+
+# Create a new kubernetes cluster for the app (if not already running)
+if (az aks show -g $APP_NAME -n $APP_NAME); then
+    echo "Cluster is already defined"
+else
+    az aks create \
+        --service-principal $AZURE_SERVICE_PRINCIPAL_ID \
+        --client-secret $AZURE_SERVICE_PRINCIPAL_SECRET \
+        --resource-group $APP_NAME \
+        --name $APP_NAME \
+        --node-count 1 \
+        --enable-addons http_application_routing,monitoring \
+        --generate-ssh-keys
+fi
+
+export DNS_ZONE=$(az aks show --resource-group $APP_NAME --name $APP_NAME --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o table | grep westeurope)
+
+# Download kubernetes config for the newly created cluster
+az aks get-credentials \
+    --resource-group $APP_NAME \
+    --name $APP_NAME
+
+# Install kubectl
+az aks install-cli
+
+# Deploy app
+eval "echo \"$(cat kubernetes-manifest.yml)\"" | kubectl apply -f -
+
+# Show ingress details
+kubectl describe ingress

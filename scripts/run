@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+if ! APP_DIR="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    APP_DIR="$(pwd)"
+fi
+
+options=''
+
+docker run --rm \
+    -v "${APP_DIR}":/app \
+    -w /app \
+    ${options} \
+    "$@"
